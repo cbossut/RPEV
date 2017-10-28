@@ -112,6 +112,18 @@ void serverConfig(const byte nbBtns, const byte* btnPins, const byte PWMPin) {
     sprintf(buf, "p%d", v);
     server.send(200, httype, buf);
   });
+
+  // Reset the trigger delays in case of stuck bug
+  server.on("/reset", [nbBtns, btnPins]{
+    byte i;
+    for (i = 0 ; i < nbBtns ; i++) {
+      if (triggerDelays[i]) {
+        inverseBtn(i+1, btnPins);
+        triggerDelays[i] = 0;
+      }
+    }
+    server.send(200, httype, "Reseted triggers");
+  });
   
   // status
   server.on("/", [nbBtns]()mutable->void{

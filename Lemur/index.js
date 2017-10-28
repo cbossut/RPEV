@@ -44,6 +44,13 @@ udpPort.on("message", function(mess) {
           udpPort.send(ans, ipadIP, 8000)
         })
       })
+    } else if (addr[2] == "Reset") {
+      http.get("http://"+jouet.ip+"/reset", (res)=>{
+        res.setEncoding('utf8')
+        res.on('data', (data)=>{
+          udpPort.send({address:"/"+addr[1]+"/Mess",args:["@content",data]},ipadIP,8000)
+        })
+      })
     }
   }
   
