@@ -1,0 +1,19 @@
+[
+  {
+    "name": "blank",
+    "ip": "255.255.255.255",
+    "functions": [
+      "power",
+      "walk",
+      "sing",
+      "pitch"
+    ]
+  },
+  {
+    "name": "Test",
+    "ip": "192.168.1.10",
+    "Btn1":"",
+    "Btn2":"trigger?btn=2",
+    "Btn3":"trigger?btn=3"
+  }
+]
