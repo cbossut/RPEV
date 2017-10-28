@@ -28,10 +28,11 @@ void setup() {
     pinMode(btnPins[i], OUTPUT);
   }
   Serial.begin(9600);
+  Serial.setDebugOutput(true);
   
   wifiStatus = wifiConfig(ssid, password, routeurIP);
   Serial.print("Wifi status is ");
-  Serial.println(wifiStatus == WL_CONNECTED ? "good !" : "bad...");
+  Serial.println(wifiStatus);
   Serial.println(WiFi.localIP());
   initPins(nbBtns, btnPins, btnInit, PWMPin, PWMInit);
   serverConfig(nbBtns, btnPins, PWMPin);
@@ -40,6 +41,11 @@ void setup() {
 
 unsigned long prevMs = 0;
 void loop() {
+  if (WiFi.status() == WL_CONNECTED) {
+    analogWrite(ledPin, 1022);
+  } else {
+    digitalWrite(ledPin, 0);
+  }
   unsigned long curMs = millis();
   updateTriggers(curMs - prevMs, nbBtns, btnPins);
   prevMs = curMs;
