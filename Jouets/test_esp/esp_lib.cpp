@@ -6,6 +6,8 @@
 
 extern ESP8266WebServer server;
 
+const char* httype = "text/plain";
+
 int wifiConfig(const char* ssid, const char* password, const uint8_t* routeurIP) {
   EEPROM.begin(4);
   uint8_t id = EEPROM.read(0);
@@ -46,17 +48,19 @@ void initPins(const byte nbBtns, const byte* btnPins, const uint16_t btnInit, co
 byte getBtnArg(const byte nbBtns) {
   byte btn = server.arg("btn").toInt();
   if (!btn) {
-    server.sendContent("No BTN !"); //TODO Do I need to send back a valid HTTP request w/ header to work w/ browser ? plus we could use HTTP codes as error codes ?
+    server.send(200, httype, "No BTN !"); //TODO Do I need to send back a valid HTTP request w/ header to work w/ browser ? plus we could use HTTP codes as error codes ?
     return 0;
   }
   if (btn > nbBtns) {
     char buf[25];
     sprintf(buf, "Only %d btns defined", nbBtns);
-    server.sendContent(buf);
+    server.send(200, httype, buf);
     return 0;
   }
   if (triggerDelays[btn-1]) {
-    server.sendContent("Trigger in progress for btn"+btn);
+    char buf[30];
+    sprintf(buf, "Trigger in progress for btn%d", btn);
+    server.send(200, httype, buf);
     return 0;
   }
   return btn;
@@ -73,13 +77,15 @@ void serverConfig(const byte nbBtns, const byte* btnPins, const byte PWMPin) {
     
     byte state = 1 - server.arg("inv").toInt(); // 0 or 1
     
-    int delay = server.arg("delay").toInt(); // 0 if no arg
-    delay = delay ? delay : 200; // default delay to 200ms
+    int delayTime = server.arg("delay").toInt(); // 0 if no arg
+    delayTime = delayTime ? delayTime : 200; // default delay to 200ms
     
     digitalWrite(btnPins[btn-1], state);
     bitWrite(btnStates, btn-1, state);
-    server.sendContent("b"+btn+state+delay); //WARNING if btn >= 10, different number of chars...
-    triggerDelays[btn-1] = delay; //TODO delay proportionnal to PWM ?
+    char buf[10];
+    sprintf(buf, "b%d%d%d", btn, state, delayTime);
+    server.send(200, httype, buf); //WARNING if btn >= 10, different number of chars...
+    triggerDelays[btn-1] = delayTime; //TODO delay proportionnal to PWM ?
   });
   
   // toggle change the actual state of the btnPin (if no trig in progress)
@@ -90,24 +96,34 @@ void serverConfig(const byte nbBtns, const byte* btnPins, const byte PWMPin) {
     }
     
     byte state = inverseBtn(btn, btnPins);
-    server.sendContent("b"+btn+state);
+    char buf[5];
+    sprintf(buf, "b%d%d", btn, state);
+    server.send(200, httype, buf);
   });
   
   server.on("/PWM", [PWMPin]()mutable->void{
     if (!server.hasArg("v")) {
-      server.sendContent("No value !");
+      server.send(200, httype, "No value !");
       return;
     }
     int v = server.arg("v").toInt();
     analogWrite(PWMPin, v);
-    server.sendContent("p"+v);
+    char buf[10];
+    sprintf(buf, "p%d", v);
+    server.send(200, httype, buf);
   });
   
   // status
   server.on("/", [nbBtns]()mutable->void{
     char buf[20];
     sprintf(buf, "n%ds%dp%d", nbBtns, btnStates, PWMState);
-    server.sendContent(buf);
+    server.send(200, httype, buf);
+  });
+
+  // test function to blink the led
+  server.on("/led", []{
+    digitalWrite(2, server.arg("v").toInt());
+    server.send(200, httype, "Led the light !");
   });
 }
 
@@ -119,7 +135,7 @@ void updateTriggers(const int elapsed, const byte nbBtns, const byte* btnPins) {
       if (triggerDelays[i] - elapsed <= 0) {
         triggerDelays[i] = 0;
         byte state = inverseBtn(i+1, btnPins);
-        //server.sendContent("b"+i+1+"r"+state); //TODO How to talk with client outside request ?
+        //server.send(200, httype, "b"+i+1+"r"+state); //TODO How to talk with client outside request ?
       } else {
         triggerDelays[i] -= elapsed;
       }
