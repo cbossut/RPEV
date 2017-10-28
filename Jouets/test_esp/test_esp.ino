@@ -5,6 +5,8 @@
 
 const char* ssid = "Pierre_Luc";
 const char* password = "Pink fluffy unicorns dancing on rainbows";
+//const char* ssid = "NUMERICABLE-A7A6";
+//const char* password = "dd0258ce42f43e8ae7eacd4d4d";
 const uint8_t routeurIP[4] = {192,168,1,254};
 
 const byte nbBtns = 3;
