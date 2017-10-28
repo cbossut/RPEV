@@ -27,7 +27,7 @@ udpPort.on("message", function(mess) {
         PWMWait = false
         res.setEncoding('utf8')
         res.on('data', (data)=>{
-          udpPort.send({address:"/"+addr[1]+"/Mess",args:["@content",data]},ipadIP,8000)
+          udpPort.send({address:"/"+addr[1]+"/PWMValue",args:["@content",data.slice(1)]},ipadIP,8000)
         })
       })
     } else if (addr[2].startsWith("Btn")) {
