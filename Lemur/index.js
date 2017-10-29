@@ -63,15 +63,15 @@ udpPort.on("message", function(mess) {
          sendLemur("/"+addr[1]+"/PWMValue", ["@content",data.slice(1)])
         })
       })
-    } else if (addr[2].startsWith("Btn") && mess.args[0]) {
       console.log("Saying ", jouet[addr[2]], " to ", jouet.name)
+    } else if (addr[2].startsWith("Btn") && (jouet[addr[2]].startsWith("toggle") || mess.args[0])) {
       sendJouet(n, jouet[addr[2]], (res)=>{
         res.setEncoding('utf8')
         res.on('data', (data)=>{
           sendLemur("/"+addr[1]+"/Mess", ["@content", data])
         })
       })
-    } else if (addr[2] == "Reset") {
+    } else if (addr[2] == "Reset" && mess.args[0]) {
       sendJouet(n, "reset", (res)=>{
         res.setEncoding('utf8')
         res.on('data', (data)=>{
