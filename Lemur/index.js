@@ -1,4 +1,6 @@
-var fs = require("fs"),
+var lemurIP = "192.168.0.31",
+    lemurPort = 8000,
+    fs = require("fs"),
     http = require("http"),
     osc = require("osc"),
     udpPort = new osc.UDPPort({
@@ -10,6 +12,10 @@ var fs = require("fs"),
     PWMWait = false
 
 //console.log(jouets)
+
+function sendLemur(addr, args) { //TODO should be used instead of every udpPort.send
+  udpPort.send({address:addr,args:args},lemurIP,lemurPort)
+}
 
 udpPort.on("ready", function() {
   console.log("UDP Port Ready !")
