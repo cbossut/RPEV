@@ -1,5 +1,6 @@
 var lemurIP = "192.168.0.31",
     lemurPort = 8000,
+    ipadIP = "192.168.0.31",
     fs = require("fs"),
     http = require("http"),
     osc = require("osc"),
@@ -7,9 +8,8 @@ var lemurIP = "192.168.0.31",
       localAddress: "0.0.0.0",
       localPort: 8000
     }),
-    ipadIP = "192.168.1.41",
     jouets = JSON.parse(fs.readFileSync("../Jouets/jouets.json")),
-    PWMWait = false
+    PWMWait = false // TODO should be one flag per jouet
 
 //console.log(jouets)
 
@@ -94,8 +94,6 @@ udpPort.on("message", function(mess) {
 })
 
 udpPort.open()
-
-
 
 
 
