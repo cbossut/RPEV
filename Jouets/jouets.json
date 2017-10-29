@@ -11,9 +11,34 @@
   },
   {
     "name": "Test",
-    "ip": "192.168.1.10",
+    "ip": "192.168.0.10",
     "Btn1":"",
     "Btn2":"trigger?btn=2",
-    "Btn3":"trigger?btn=3"
+    "Btn3":"trigger?btn=3",
+    "PWMBorns":[600,1024]
+  },
+  {
+    "name": "Wall-e",
+    "ip": "192.168.0.11",
+    "Btn1":"trigger?btn=1",
+    "Btn2":"",
+    "Btn3":"",
+    "PWMBorns":[800,0]
+  },
+  {
+    "name": "Winnie",
+    "ip": "192.168.0.12",
+    "Btn1":"toggle?btn=1",
+    "Btn2":"trigger?btn=3&inv=1",
+    "Btn3":"trigger?btn=2&inv=1",
+    "PWMBorns":[150,1024]
+  },
+  {
+    "name": "Bébé",
+    "ip": "192.168.0.13",
+    "Btn1":"trigger?btn=3",
+    "Btn2":"",
+    "Btn3":"",
+    "PWMBorns":[800,0]
   }
 ]
