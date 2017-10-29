@@ -43,7 +43,8 @@ udpPort.on("message", function(mess) {
     var jouet = jouets[addr[1][addr[1].length-1]]
     if (addr[2] == "PWM" && !PWMWait) {
       PWMWait = true
-      http.get("http://"+jouet.ip+"/PWM?v="+mess.args[0], (res)=>{
+      var PWMval = mess.args[0]*(jouet.PWMBorns[1]-jouet.PWMBorns[0])+jouet.PWMBorns[0]
+      http.get("http://"+jouet.ip+"/PWM?v="+PWMval, (res)=>{
         PWMWait = false
         res.setEncoding('utf8')
         res.on('data', (data)=>{
