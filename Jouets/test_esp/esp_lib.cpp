@@ -14,8 +14,9 @@ int wifiConfig(const char* ssid, const char* password, const uint8_t* routeurIP)
   
   IPAddress ip(routeurIP[0], routeurIP[1], routeurIP[2], id);
   IPAddress routeur(routeurIP);
+  IPAddress subnet(255,255,255,0);
   
-  WiFi.config(ip, routeur, routeur); // routeur for dns and gateway, default subnet 255.255.255.0
+  WiFi.config(ip, routeur, subnet);//NOTE Seems that WiFi.config doesn't have the same signature than in Arduino ! routeur); // routeur for dns and gateway, default subnet 255.255.255.0
   return WiFi.begin(ssid, password);
 }
 
