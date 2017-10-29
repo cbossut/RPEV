@@ -50,7 +50,7 @@ udpPort.on("message", function(mess) {
           udpPort.send({address:"/"+addr[1]+"/PWMValue",args:["@content",data.slice(1)]},ipadIP,8000)
         })
       })
-    } else if (addr[2].startsWith("Btn")) {
+    } else if (addr[2].startsWith("Btn") && mess.args[0]) {
       console.log("Saying ", jouet[addr[2]], " to ", jouet.name)
       http.get("http://"+jouet.ip+"/"+jouet[addr[2]], (res)=>{
         res.setEncoding('utf8')
