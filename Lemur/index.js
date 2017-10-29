@@ -8,8 +8,11 @@ var lemurIP = "192.168.0.31",
       localAddress: "0.0.0.0",
       localPort: 8000
     }),
-    jouets = JSON.parse(fs.readFileSync("../Jouets/jouets.json")),
-    PWMWait = false // TODO should be one flag per jouet
+    jouets = JSON.parse(fs.readFileSync("../Jouets/jouets.json"))
+
+for (var i = 1 ; i < jouets.length ; i++) {
+  jouets[i].PWMWait = false
+}
 
 //console.log(jouets)
 
@@ -41,11 +44,11 @@ udpPort.on("message", function(mess) {
   var addr = mess.address.split('/')
   if (addr[1].startsWith('Jouet')) {
     var jouet = jouets[addr[1][addr[1].length-1]]
-    if (addr[2] == "PWM" && !PWMWait) {
-      PWMWait = true
+    if (addr[2] == "PWM" && !jouet.PWMWait) {
+      jouet.PWMWait = true
       var PWMval = mess.args[0]*(jouet.PWMBorns[1]-jouet.PWMBorns[0])+jouet.PWMBorns[0]
       http.get("http://"+jouet.ip+"/PWM?v="+PWMval, (res)=>{
-        PWMWait = false
+        jouet.PWMWait = false
         res.setEncoding('utf8')
         res.on('data', (data)=>{
           udpPort.send({address:"/"+addr[1]+"/PWMValue",args:["@content",data.slice(1)]},ipadIP,8000)
