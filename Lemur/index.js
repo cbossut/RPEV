@@ -1,6 +1,5 @@
 var lemurIP = "192.168.0.31",
     lemurPort = 8000,
-    ipadIP = "192.168.0.31",
     fs = require("fs"),
     http = require("http"),
     osc = require("osc"),
@@ -16,7 +15,7 @@ for (var i = 1 ; i < jouets.length ; i++) {
 
 //console.log(jouets)
 
-function sendLemur(addr, args) { //TODO should be used instead of every udpPort.send
+function sendLemur(addr, args) {
   udpPort.send({address:addr,args:args},lemurIP,lemurPort)
 }
 
@@ -51,7 +50,7 @@ udpPort.on("message", function(mess) {
         jouet.PWMWait = false
         res.setEncoding('utf8')
         res.on('data', (data)=>{
-          udpPort.send({address:"/"+addr[1]+"/PWMValue",args:["@content",data.slice(1)]},ipadIP,8000)
+         sendLemur("/"+addr[1]+"/PWMValue", ["@content",data.slice(1)])
         })
       })
     } else if (addr[2].startsWith("Btn") && mess.args[0]) {
@@ -59,20 +58,14 @@ udpPort.on("message", function(mess) {
       http.get("http://"+jouet.ip+"/"+jouet[addr[2]], (res)=>{
         res.setEncoding('utf8')
         res.on('data', (data)=>{
-          console.log(data)
-          var ans = {
-            address: "/"+addr[1]+"/Mess",
-            args: ["@content", data]
-          }
-          console.log("sending ", ans)
-          udpPort.send(ans, ipadIP, 8000)
+          sendLemur("/"+addr[1]+"/Mess", ["@content", data])
         })
       })
     } else if (addr[2] == "Reset") {
       http.get("http://"+jouet.ip+"/reset", (res)=>{
         res.setEncoding('utf8')
         res.on('data', (data)=>{
-          udpPort.send({address:"/"+addr[1]+"/Mess",args:["@content",data]},ipadIP,8000)
+          sendLemur("/"+addr[1]+"/Mess", ["@content",data])
         })
       })
     }
@@ -82,17 +75,8 @@ udpPort.on("message", function(mess) {
   
   
   
-  if (mess.address == "/Switches/x") {
-    var ans = {
-          address: "/Text",
-          args: [
-            "@content",
-            mess.args[0]?"Clicked":"Noped"
-          ]
-        }
-    console.log("sending ", ans)
-    udpPort.send(ans, ipadIP, 8000)
-    http.get("http://192.168.1.10/led?v="+mess.args[0], (res)=>{res.setEncoding('utf8'),res.on('data', console.log)})
+  if (mess.address == "/Switches/x") {//NOTE Only little test feature to get rid of some day
+    sendLemur("/Text", ["@content", mess.args[0]?"Clicked":"Noped"])
   }
 })
 
