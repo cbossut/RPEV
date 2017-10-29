@@ -19,6 +19,20 @@ function sendLemur(addr, args) { //TODO should be used instead of every udpPort.
 
 udpPort.on("ready", function() {
   console.log("UDP Port Ready !")
+  for (let i = 1 ; i < jouets.length ; i++) {
+    var jouet = jouets[i]
+    sendLemur("/Jouet"+i+"/Name", ["@content", jouet.name])
+    for (let j = 1 ; j <= 3 ; j++) { //TODO Btns should be an array ? limited by max Btns in Lemur
+      var btn = "Btn"+j
+      if (jouet[btn].startsWith("trigger")) {
+        sendLemur("/Jouet"+i+"/"+btn, ["@behavior", 1])
+      } else if (jouet[btn].startsWith("toggle")) {
+        sendLemur("/Jouet"+i+"/"+btn, ["@behavior", 0])
+      } else {
+        sendLemur("/Jouet"+i+"/"+btn, ["@outline", 0])
+      }
+    }
+  }
 })
 
 udpPort.on("message", function(mess) {
