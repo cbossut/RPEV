@@ -1,5 +1,6 @@
 var lemurIP = "192.168.0.31",
     lemurPort = 8000,
+    PWMMaxWait = 2,
     fs = require("fs"),
     http = require("http"),
     osc = require("osc"),
@@ -10,7 +11,7 @@ var lemurIP = "192.168.0.31",
     jouets = JSON.parse(fs.readFileSync("../Jouets/jouets.json"))
 
 for (var i = 1 ; i < jouets.length ; i++) {
-  jouets[i].PWMWait = false
+  jouets[i].PWMSent = 0
 }
 
 //console.log(jouets)
@@ -21,7 +22,7 @@ function sendLemur(addr, args) {
 
 function sendJouet(n, path, clbk) { //TODO could be even more generic cause similar clbks
   http.get("http://"+jouets[n].ip+"/"+path, clbk).on('error', (err)=>{
-    jouets[n].PWMWait = false
+    jouets[n].PWMSent = 0
     errClbk(err)
   })
 }
@@ -53,11 +54,11 @@ udpPort.on("message", function(mess) {
   if (addr[1].startsWith('Jouet')) {
     var n = addr[1][addr[1].length-1], //TODO Warning ! n seems to be a number but is a char
         jouet = jouets[n]
-    if (addr[2] == "PWM" && !jouet.PWMWait) {
-      jouet.PWMWait = true
-      var PWMval = mess.args[0]*(jouet.PWMBorns[1]-jouet.PWMBorns[0])+jouet.PWMBorns[0]
+    if (addr[2] == "PWM" && addr[3] == 'x' && jouet.PWMSent < PWMMaxWait) {
+      jouet.PWMSent++
+      var PWMval = Math.round(mess.args[0]*(jouet.PWMBorns[1]-jouet.PWMBorns[0])+jouet.PWMBorns[0])
       sendJouet(n, "PWM?v="+PWMval, (res)=>{
-        jouet.PWMWait = false
+        jouet.PWMSent--
         res.setEncoding('utf8')
         res.on('data', (data)=>{
          sendLemur("/"+addr[1]+"/PWMValue", ["@content",data.slice(1)])
