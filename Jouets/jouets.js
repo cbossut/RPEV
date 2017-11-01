@@ -4,6 +4,7 @@ module.exports = {
 }
 
 //TODO Separate interface code and jouets computing ?
+//TODO make sendLemur global ?
 
 const http = require("http"),
       fs = require("fs"),
@@ -15,14 +16,14 @@ for (let i = 1 ; i < jouets.length ; i++) {
 }
 
 function sendJouet(n, path, clbk) { //TODO could be even more generic cause similar clbks
-  console.log("Send ", path, " to ", jouets[n].name) //NOTE Debug
+  //console.log("Send ", path, " to ", jouets[n].name) //NOTE Debug
   http.get("http://"+jouets[n].ip+"/"+path, clbk).on('error', (err)=>{
     jouets[n].PWMSent = 0
     errClbk(err)
   })
 }
 
-function errClbk(err) {console.log(err.code, " at ", err.address)}
+function errClbk(err) {console.log("Jouets :", err.code, " at ", err.address)}
 
 function lemurConfig(sendLemur) {
   for (let i = 1 ; i < jouets.length ; i++) {

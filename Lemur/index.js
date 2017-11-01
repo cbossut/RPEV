@@ -1,4 +1,4 @@
-const lemurIP = "192.168.1.41",
+const lemurIP = "192.168.0.31",
       lemurPort = 8000,
       osc = require("osc"),
       udpPort = new osc.UDPPort({
@@ -13,12 +13,12 @@ function sendLemur(addr, args) {
 }
 
 udpPort.on("ready", () => {
-  console.log("\nUDP Port Ready !")
+  console.log("\nLemur's UDP Port Ready !")
   jouets.lemurConfig(sendLemur)
 })
 
 udpPort.on("message", mess => {
-  //console.log("Message received :", mess) //NOTE Debug
+  //console.log("Received from Lemur: ", mess) //NOTE Debug
   
   jouets.manageLemurMessage(mess, sendLemur)
   
