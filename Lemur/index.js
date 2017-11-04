@@ -5,7 +5,8 @@ const lemurIP = "192.168.0.31",
         localAddress: "0.0.0.0",
         localPort: 8000
       }),
-      jouets = require("../Jouets/jouets.js")
+      jouets = require("../Jouets/jouets.js"),
+      UR = require("../UR/UR.js")
 
 function sendLemur(addr, args) {
   //console.log("Send ", args, " to Lemur's ", addr) //NOTE Debug
@@ -21,6 +22,7 @@ udpPort.on("message", mess => {
   //console.log("Received from Lemur: ", mess) //NOTE Debug
   
   jouets.manageLemurMessage(mess, sendLemur)
+  UR.manageLemurMessage(mess, sendLemur)
   
 
   if (mess.address == "/Switches/x") {//NOTE Only little test feature to get rid of some day
