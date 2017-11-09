@@ -10,7 +10,7 @@ const char* password = "dd0258ce42f43e8ae7eacd4d4d";
  uint8_t routeurIP[4] = {192,168,0,1};
 
 const byte nbBtns = 5;
-const byte btnPins[nbBtns] = {0,4,5,12,14}; // Pins 1 and 3 reserved for Serial communication
+const byte btnPins[nbBtns] = {4,5,12,13,14}; // Pins 1 and 3 reserved for Serial communication toute les pins utilisable TODO virer les boutnons/ appel gpio direct
 const uint16_t btnInit = B000; // Btn 1 <=> rightmost bit
 const byte PWMPin = 16;
 const byte ledPin = 2;
@@ -26,7 +26,7 @@ void setup() {
   for (byte i = 0 ; i < nbBtns ; i++) {
     pinMode(btnPins[i], OUTPUT);
   }
-  Serial.begin(9600);
+  Serial.begin(9600);//TODO serial OFF
   Serial.setDebugOutput(true);
   
   wifiStatus = wifiConfig(ssid, password, routeurIP);
