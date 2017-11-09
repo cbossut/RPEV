@@ -12,7 +12,7 @@ void setup() {
   EEPROM.begin(4);
   EEPROM.write(0, id);
   EEPROM.commit();
-////////////////////////////////////////gael PWMinit write
+////////////////////////////////////////gael PWMinit write //prout!
   byte pwm1 = pwminit & 0xff;
   byte pwm2 = (pwminit >> 8);
   EEPROM.write(1, pwm1);
