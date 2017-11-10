@@ -1,4 +1,4 @@
-const URIP = "192.168.0.103",
+const URIP = "192.168.0.102",
       URPort = 30002, // 1 more mess ? 3 125Hz instead 10
       net = require("net"),
       sock = net.connect(URPort, URIP, () => console.log("UR's TCP Socket Ready !")).on('error', console.log).on('data', decodeURMessage)
@@ -14,7 +14,8 @@ let getMode = 0,
     positions = [], // positions registered via Lemur
     curJointPos = [], // radians updated on UR data
     serialPos = [], // 0-1023 updated on serial data
-    initPos = [] // to map from Serial from starting position when serial is started
+    initPos = [], // to map from Serial from starting position when serial is started
+    period = 100
 
 //TODO save and load positions from and to a file
 function manageLemurMessage(mess, sendLemur) {
@@ -41,10 +42,10 @@ function manageLemurMessage(mess, sendLemur) {
 //NOTE See Client_Interface.xlsx, tab DataStreamFromURController
 function decodeURMessage(mess) {
   let pos = 0,
-      size = bufToInt(mess, pos)
+      size = mess.readInt32BE(pos)
   pos += 5
   while(pos < size) {
-    let curSize = bufToInt(mess,pos),
+    let curSize = mess.readInt32BE(pos),
         curType = mess[pos+4]
     if (curType == 1) {
       getPosFromJointData(mess.slice(pos, pos+curSize))
@@ -76,7 +77,7 @@ function startSerial() {
     myport = new serial(p, {baudRate: 115200}, () => {
       console.log('Serial opened !')
       initPos = curJointPos.slice() // copy array !!!
-      setInterval(mapSerialToUR, 50)
+      setInterval(mapSerialToUR, period)
     })
 
     myport.setEncoding('utf8')
@@ -85,7 +86,7 @@ function startSerial() {
 }
 
 let serialPacket = ""
-function decodeSerialData(data) {
+function decodeSerialData(data) { 
   if (!data.startsWith('i')) {
     if (serialPacket.startsWith('i')) {
       data = serialPacket + data
@@ -95,29 +96,32 @@ function decodeSerialData(data) {
   if (data.startsWith('i')) {
     let end = data.indexOf('f')
     if (end != -1) {
-      let posSerialAll = data.slice(1).split(';').slice(0,-1) // temporary for two potar test
-      posSerial = [posSerialAll[0], posSerialAll[5]]
+      let serialPosAll = data.slice(1).split(';').slice(0,-1) // temporary for two potar test
+      serialPos = [serialPosAll[0], serialPosAll[5]]
     } else {
       serialPacket = data
     }
   }
 }
 
-
+let prevError = [],
+    p = period*0.08,
+    d = 10
 function mapSerialToUR() {
   let targetPos = curJointPos.slice() // copy array !!!!!
-  targetPos[0] = (posSerial[1]/2048) * Math.PI + initPos[0]
-  targetPos[3] = (posSerial[0]/2048) * Math.PI + initPos[3]
+  targetPos[0] = (serialPos[1]/2048) * Math.PI + initPos[0]
+  targetPos[3] = (serialPos[0]/2048) * Math.PI + initPos[3]
   let targetSpeed = []
   for (let i = 0 ; i < 6 ; i++) {
-    let diff = targetPos[i] - curJointPos[i]
-    targetSpeed[i] = Math.abs(diff) > 0.01 ? diff * 4 : 0
-    //targetSpeed[i] = Math.abs(diff) > 0.1 ? (diff > 0 ? 10 : -10) : 0
+    let error = targetPos[i] - curJointPos[i]
+    targetSpeed[i] = Math.abs(error) > 0.01 ? error * p + (error - prevError[i]) * d : 0
+    //targetSpeed[i] = Math.abs(error) > 0.1 ? (diff > 0 ? 10 : -10) : 0
+    prevError[i] = error
   }
   console.log("Current : ", curJointPos, "Target : ", targetPos)
-  let cmd = "speedj(["+targetSpeed+"],5,0.055)\n"
+  let cmd = "speedj(["+targetSpeed+"],5,"+(period*1.1/1000)+")\n"
   console.log(cmd)
-  console.log(posSerial)
+  console.log(serialPos)
   sock.write(cmd)
 }
 
