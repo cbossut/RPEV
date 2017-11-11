@@ -83,7 +83,7 @@ void initPins(const byte _nbPins, const byte* _pins, const byte _PWMPin) {
   for (i = 0 ; i < nbPins ; i++) {
     pins[i] = _pins[i];
     pinMode(pins[i], OUTPUT);
-    setPin(pins[i], bitRead(pinsInit, nbPins-i)); //WARNING bug if pinsInit sets H pins both high
+    setPin(pins[i], bitRead(pinsInit, nbPins-(i+1))); //WARNING bug if pinsInit sets H pins both high //fix i+1 instead i
   }
 }
 

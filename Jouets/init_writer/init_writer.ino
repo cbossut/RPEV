@@ -1,10 +1,10 @@
 #include<EEPROM.h>
-
-const byte id = ;           //LAST IP ADD
-const uint16_t pwmInit = ;  //PWM INITIAL
+//Winnie the pooh exemple
+const byte id = 12;           //LAST IP ADD
+const uint16_t pwmInit = 750 ;  //PWM INITIAL
 //WARNING fix dependance with the authorized pins
 //WARNING pins 12 and 14 are protected for H bridge, they cannot be both high
-const byte pinsInit = B;    //pin 0 4 5 12 13 14
+const byte pinsInit = B111000;    //pin 0 4 5 12 13 14
 
 int res;
 
@@ -28,8 +28,9 @@ void setup() {
   Serial.println(EEPROM.read(0));
   Serial.print("Pwm initial : ");
   Serial.println(EEPROM.read(1) + (EEPROM.read(2) << 8));
-  Serial.print("Pins 4 5 12 13 14 init : ");
+  Serial.print("Pins 0 4 5 12 13 14 init : ");
   byte pins = EEPROM.read(3);
+   Serial.print(bitRead(pins,5));
   Serial.print(bitRead(pins,4));
   Serial.print(bitRead(pins,3));
   Serial.print(bitRead(pins,2));
