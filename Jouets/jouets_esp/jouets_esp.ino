@@ -8,7 +8,7 @@ const char* password = "dd0258ce42f43e8ae7eacd4d4d";
 const uint8_t routeurIP[4] = {192,168,0,1};
 
 const byte nbPins = 5;
-const byte pins[nbPins] = {4,5,12,13,14}; // Pins 1 and 3 reserved for Serial communication
+const byte pins[nbPins] = {0,4,5,12,13,14}; // Pins 1 and 3 reserved for Serial communication
 const byte PWMPin = 16;
 const byte ledPin = 2;
 

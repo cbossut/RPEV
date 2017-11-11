@@ -2,7 +2,8 @@
 
 const byte id = ;           //LAST IP ADD
 const uint16_t pwmInit = ;  //PWM INITIAL
-const byte pinsInit = B;    //pin 4 5 12 13 14
+//WARNING fix dependance with the authorized pins
+const byte pinsInit = B;    //pin 0 4 5 12 13 14
 
 int res;
 
