@@ -96,11 +96,11 @@ void sendResponse(const String mess) { // FUTURE Use HTTP codes
 
 // Retrieve pin arg from server, checks if that pin is authorized and in trig delay
 byte getPinArg() {
-  byte pin = server.arg("pin").toInt();
-  if (!pin) {
+  if (!server.hasArg("pin")) {
     sendResponse("No Pin !");
     return -1;
   }
+  byte pin = server.arg("pin").toInt();
   bool authorized = false;
   byte i;
   for (i = 0 ; i < nbPins ; i++) {
