@@ -3,6 +3,7 @@
 const byte id = ;           //LAST IP ADD
 const uint16_t pwmInit = ;  //PWM INITIAL
 //WARNING fix dependance with the authorized pins
+//WARNING pins 12 and 14 are protected for H bridge, they cannot be both high
 const byte pinsInit = B;    //pin 0 4 5 12 13 14
 
 int res;

@@ -6,6 +6,9 @@
 
 //WARNING all the code assumes the max number of pins is 16, by using uint16_t as bitarray
 #define MAX_PINS 16
+//NOTE pins 12 and 14 are used for H bridge, therefore there's a fixed  security to prevent both high
+#define H_PIN1 12
+#define H_PIN2 14
 
 extern ESP8266WebServer server; // Instantiated in the .ino to prevent large memory usage by argument
 
@@ -38,10 +41,16 @@ int wifiConfig(const char* ssid, const char* password, const uint8_t* routeurIP)
 
 ///////////////////////// General gpio writing
 
-// Sets gpio n to state, don't care about authorized pins
-void setPin(const byte n, const byte state) {
+// Sets gpio n to state, don't care about authorized pins, protect H bridge
+bool setPin(const byte n, const byte state) {
+  if (state &&
+      ((n == H_PIN1 && bitRead(pinStates, H_PIN2)) ||
+       (n == H_PIN2 && bitRead(pinStates, H_PIN1)))) {
+    return false;
+  }
   digitalWrite(n, state);
   bitWrite(pinStates, n, state);
+  return true;
 }
 
 void setPWM(const uint16_t v) {
@@ -52,8 +61,11 @@ void setPWM(const uint16_t v) {
 // Inverse gpio n state, don't care about authorized pins
 byte inversePin(const byte n) {
   byte state = 1 - bitRead(pinStates, n);
-  setPin(n, state);
-  return state;
+  if (setPin(n, state)) { // checks protection for H bridge
+    return state;
+  } else {
+    return -1;
+  }
 }
 
 void initPins(const byte _nbPins, const byte* _pins, const byte _PWMPin) {
@@ -71,7 +83,7 @@ void initPins(const byte _nbPins, const byte* _pins, const byte _PWMPin) {
   for (i = 0 ; i < nbPins ; i++) {
     pins[i] = _pins[i];
     pinMode(pins[i], OUTPUT);
-    setPin(pins[i], bitRead(pinsInit, nbPins-i));
+    setPin(pins[i], bitRead(pinsInit, nbPins-i)); //WARNING bug if pinsInit sets H pins both high
   }
 }
 
@@ -125,11 +137,14 @@ void serverConfig() {
     int delayTime = server.arg("delay").toInt(); // 0 if no arg
     delayTime = delayTime ? delayTime : 200; // default delay to 200ms
     
-    setPin(pin, state);
-    char buf[10];
-    sprintf(buf, "b%d%d%d", pin, state, delayTime);
-    sendResponse(buf); //WARNING if pin >= 10, different number of chars...
-    triggerDelays[pin] = delayTime; //TODO delay proportionnal to PWM ?
+    if (setPin(pin, state)) {
+      char buf[10];
+      sprintf(buf, "b%d%d%d", pin, state, delayTime);
+      sendResponse(buf); //WARNING if pin >= 10, different number of chars...
+      triggerDelays[pin] = delayTime; //TODO delay proportionnal to PWM ?
+    } else {
+      sendResponse("H pins cannot be both high !");
+    }
   });
   
   // toggle change the actual state of the pin (if no trig in progress)
@@ -140,9 +155,13 @@ void serverConfig() {
     }
     
     byte state = inversePin(pin);
-    char buf[5];
-    sprintf(buf, "b%d%d", pin, state);
-    sendResponse(buf);
+    if (state == -1) {
+      sendResponse("H pins cannot be both high !");
+    } else {
+      char buf[5];
+      sprintf(buf, "b%d%d", pin, state);
+      sendResponse(buf);
+    }
   });
   
   server.on("/PWM", [&]()mutable->void{
