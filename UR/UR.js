@@ -1,7 +1,7 @@
 const URIP = "192.168.0.102",
       URPort = 30002, // 1 more mess ? 3 125Hz instead 10
       net = require("net"),
-      sock = net.connect(URPort, URIP, () => console.log("UR's TCP Socket Ready !")).on('error', console.log).on('data', decodeURMessage)
+      sock = net.connect(URPort, URIP, () => console.log("UR's TCP Socket Ready !")).on('error', (err)=>console.log("URror :",err)).on('data', decodeURMessage)
 
 function sendUR(cmd, sendLemur) {
   //console.log(cmd) //NOTE Debug
