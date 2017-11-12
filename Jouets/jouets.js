@@ -29,14 +29,15 @@ function lemurConfig(sendLemur) {
   for (let i = 1 ; i < jouets.length ; i++) {
     const jouet = jouets[i]
     sendLemur("/Jouet"+i+"/Name", ["@content", jouet.name])
-    for (let j = 1 ; j <= 3 ; j++) { //TODO Btns should be an array ? limited by max Btns in Lemur
+    //////////////////////////////WARNING !!!!!!!!! Change here the number of btns on the interface
+    for (let j = 1 ; j <= 5 ; j++) { //TODO Btns should be an array ? limited by max Btns in Lemur
       const btn = "Btn"+j
-      if (jouet[btn].startsWith("trigger")) {
+      if (!jouet[btn]) {
+        sendLemur("/Jouet"+i+"/"+btn, ["@outline", 0])
+      } else if (jouet[btn].startsWith("trigger")) {
         sendLemur("/Jouet"+i+"/"+btn, ["@behavior", 1])
       } else if (jouet[btn].startsWith("toggle")) {
         sendLemur("/Jouet"+i+"/"+btn, ["@behavior", 0])
-      } else {
-        sendLemur("/Jouet"+i+"/"+btn, ["@outline", 0])
       }
     }
   }
@@ -61,7 +62,7 @@ function manageLemurMessage(mess, sendLemur) {
       
       
       
-    } else if (addr[2].startsWith("Btn") && (jouet[addr[2]].startsWith("toggle") || mess.args[0])) { //TODO Strange way to manage trig and tog
+    } else if (addr[2].startsWith("Btn") && (jouet[addr[2]] && (jouet[addr[2]].startsWith("toggle") || mess.args[0]))) { //TODO Strange way to manage trig and tog
       sendJouet(n, jouet[addr[2]], res => {
         res.setEncoding('utf8')
         res.on('data', data => sendLemur("/"+addr[1]+"/Mess", ["@content", data]))
