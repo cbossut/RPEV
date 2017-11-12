@@ -20,7 +20,8 @@
     "name": "Wall-e",
     "ip": "192.168.0.11",
     "Btn1":"trigger?pin=0",
-    "PWMBorns":[800,0]
+    "PWMBorns":[800,0],
+    "PWMInit":300
   },
   {
     "name": "Winnie",
@@ -35,7 +36,7 @@
     "name": "Bébé",
     "ip": "192.168.0.13",
     "Btn1":"trigger?pin=5",
-    "PWMBorns":[800,0],
+    "PWMBorns":[150,1023],
     "PWMInit":500
   },
   {
@@ -67,6 +68,27 @@
   {
     "name": "Chat",
     "ip": "192.168.0.20",
+    "Btn1":"trigger?pin=5",
+    "PWMBorns":[300,1023],
+    "PWMInit":700
+  },
+  {
+    "name": "Cochon",
+    "ip": "192.168.0.15",
+    "Btn1":"trigger?pin=5",
+    "PWMBorns":[300,1023],
+    "PWMInit":700
+  },
+  {
+    "name": "Chien",
+    "ip": "192.168.0.16",
+    "Btn1":"trigger?pin=5",
+    "PWMBorns":[300,1023],
+    "PWMInit":700
+  },
+  {
+    "name": "Canard",
+    "ip": "192.168.0.17",
     "Btn1":"trigger?pin=5",
     "PWMBorns":[300,1023],
     "PWMInit":700
