@@ -1,10 +1,10 @@
 #include<EEPROM.h>
 //Winnie the pooh exemple
-const byte id = 12;           //LAST IP ADD
-const uint16_t pwmInit = 750 ;  //PWM INITIAL
+const byte id = 16;           //LAST IP ADD
+const uint16_t pwmInit = 0 ;  //PWM INITIAL
 //WARNING fix dependance with the authorized pins
 //WARNING pins 12 and 14 are protected for H bridge, they cannot be both high
-const byte pinsInit = B111000;    //pin 0 4 5 12 13 14
+const byte pinsInit = B000000;    //pin 0 4 5 12 13 14
 
 int res;
 
