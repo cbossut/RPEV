@@ -1,13 +1,17 @@
 const xb = require('./XBOXPad/xbox.js')
     , mb = require('./Metabot/metabot.js')
+    , fb = require('./FiveBot/fivebot.js')
 
 mb.init()
 
-xb.addInstrument({Metabot:mb})
+fb.init()
+
 //TOBO Currently useless, by this design, xbox should call mb methods itself, Lemur selecting the way xbox maps, treating xbox as an instrment for Lemur
+xb.addInstrument({Metabot:mb, Fivebot:fb})
 
 xb.start()
 
+// Metabot map
 xb.chgMap({
   start: (arg)=>arg && mb.start(),
   select: (arg)=>arg && mb.send("stop"),
@@ -21,6 +25,19 @@ xb.chgMap({
   ry: (arg)=>mb.send('extraX ' + mapXBtoMB(arg)),
   z: (arg)=>mb.send('turn ' + -mapXBtoMB(arg, 180))
 })
+
+// Fivebot map
+let x=0, y=0, r=0
+xb.chgMap({
+  select: (arg)=>arg && fb.close(),
+  lx: (arg)=>{y = mapXBtoFB(arg); fb.sendXYR(x,y,r)},
+  ly: (arg)=>{x = mapXBtoFB(arg); fb.sendXYR(x,y,r)},
+  z: (arg)=>{r = mapXBtoFB(arg); fb.sendXYR(x,y,r)}
+})
+
+function mapXBtoFB(v) {
+  return v*10/255 - 5
+}
 
 function mapXBtoMB(v, range=100) {
   v *= range/255
