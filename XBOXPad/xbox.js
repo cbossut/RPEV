@@ -54,7 +54,7 @@ function bufPrint(buf) {
 }
 
 function updateXBOX(buf) {
-  let cur = {
+  let cur = {//TODO Take care of jitter here instead of main index
     lx: buf[1],
     ly: buf[3],
     rx: buf[5],

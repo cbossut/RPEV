@@ -4,6 +4,7 @@ const xb = require('./XBOXPad/xbox.js')
 mb.init()
 
 xb.addInstrument({Metabot:mb})
+//TOBO Currently useless, by this design, xbox should call mb methods itself, Lemur selecting the way xbox maps, treating xbox as an instrment for Lemur
 
 xb.start()
 
