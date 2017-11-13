@@ -1,4 +1,4 @@
-const RPIP = "192.168.1.3"
+const RPIP = "192.168.0.40"
     , RPPort = 12345
     , net = require('net')
 
