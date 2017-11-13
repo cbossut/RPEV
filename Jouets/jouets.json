@@ -60,8 +60,8 @@
     "ip": "192.168.0.18",
     "Btn1":"toggle?pin=4",
     "Btn2":"trigger?pin=5",
-    "Btn3":"toggle?pin=12",
-    "Btn4":"toggle?pin=14",
+    "Btn3":"move",
+    "Btn4":"switch",
     "PWMBorns":[200,1023],
     "PWMInit":550
   },

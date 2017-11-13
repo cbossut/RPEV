@@ -30,23 +30,24 @@ function lemurConfig(sendLemur) {
     const jouet = jouets[i]
     sendLemur("/Jouet"+i+"/Name", ["@content", jouet.name])
     //////////////////////////////WARNING !!!!!!!!! Change here the number of btns on the interface
-    for (let j = 1 ; j <= 5 ; j++) { //TODO Btns should be an array ? limited by max Btns in Lemur
+    for (let j = 1 ; j <= 4 ; j++) { //TODO Btns should be an array ? limited by max Btns in Lemur
       const btn = "Btn"+j
       if (!jouet[btn]) {
         sendLemur("/Jouet"+i+"/"+btn, ["@outline", 0])
       } else if (jouet[btn].startsWith("trigger")) {
-        sendLemur("/Jouet"+i+"/"+btn, ["@behavior", 1])
-      } else if (jouet[btn].startsWith("toggle")) {
-        sendLemur("/Jouet"+i+"/"+btn, ["@behavior", 0])
+        sendLemur("/Jouet"+i+"/"+btn, ["@behavior", 1, "@outline", 1])
+      } else {//if (jouet[btn].startsWith("toggle")) {
+        sendLemur("/Jouet"+i+"/"+btn, ["@behavior", 0, "@outline", 1])
       }
     }
+    sendLemur("/Jouet"+i+"/Btn5", jouet.PWMInit ? ["@behavior", 1, "@outline", 1] : ["@outline", 0])
   }
 }
 
 function manageLemurMessage(mess, sendLemur) {
   const addr = mess.address.split('/')
   if (addr[1].startsWith('Jouet')) {
-    const n = addr[1].split('Jouet')[1], //TODO Warning ! n seems to be a number but is a char
+    const n = addr[1].slice('Jouet'.length), //TODO Warning ! n seems to be a number but is a char
           jouet = jouets[n]
     
     
@@ -62,12 +63,37 @@ function manageLemurMessage(mess, sendLemur) {
       
       
       
-    } else if (addr[2].startsWith("Btn") && (jouet[addr[2]] && (jouet[addr[2]].startsWith("toggle") || mess.args[0]))) { //TODO Strange way to manage trig and tog
-      sendJouet(n, jouet[addr[2]], res => {
-        res.setEncoding('utf8')
-        res.on('data', data => sendLemur("/"+addr[1]+"/Mess", ["@content", data]))
-      })
-      
+    } else if (addr[2].startsWith("Btn")) {
+      if (addr[2].slice('Btn'.length) == 5) {
+        sendJouet(n, "PWM?v="+jouet.PWMInit, res => {
+          res.setEncoding('utf8')
+          res.on('data', data => sendLemur("/"+addr[1]+"/PWMValue", ["@content",data.slice(1)]))
+        })
+      } else if (jouet[addr[2]]) {
+        if (jouet[addr[2]].startsWith("toggle") || mess.args[0]) {//TODO Strange way to manage trig and tog
+          sendJouet(n, jouet[addr[2]], res => {
+            res.setEncoding('utf8')
+            res.on('data', data => sendLemur("/"+addr[1]+"/Mess", ["@content", data]))
+          })
+        } else if (jouet[addr[2]] == "move") {
+          if (!jouet.Hpin) jouet.Hpin = 12
+          sendJouet(n, "toggle?pin="+jouet.Hpin, res => {
+            res.setEncoding('utf8')
+            res.on('data', data => {jouet.move = data.endsWith('1'); sendLemur("/"+addr[1]+"/Mess", ["@content", data])})
+          })
+        } else if (jouet[addr[2]] == "switch") {
+          if (jouet.Hpin == 12) jouet.Hpin = 14
+          else jouet.Hpin = 12
+          if (jouet.move) {
+            sendJouet(n, "toggle?pin="+(jouet.Hpin==12?14:12), res => {
+              sendJouet(n, "toggle?pin="+jouet.Hpin, res => {
+                res.setEncoding('utf8')
+                res.on('data', data => {sendLemur("/"+addr[1]+"/Mess", ["@content", data])})
+              })
+            })
+          }
+        }
+      }
       
       
     } else if (addr[2] == "Reset" && mess.args[0]) {
