@@ -46,7 +46,7 @@ function lemurConfig(sendLemur) {
 function manageLemurMessage(mess, sendLemur) {
   const addr = mess.address.split('/')
   if (addr[1].startsWith('Jouet')) {
-    const n = addr[1][addr[1].length-1], //TODO Warning ! n seems to be a number but is a char
+    const n = addr[1].split('Jouet')[1], //TODO Warning ! n seems to be a number but is a char
           jouet = jouets[n]
     
     
