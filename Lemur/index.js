@@ -5,6 +5,8 @@ const lemurIP = "192.168.0.31",
         localAddress: "0.0.0.0",
         localPort: 8000
       }),
+      lignesUR = 3,
+      colonnesUR = 3,
       jouets = require("../Jouets/jouets.js"),
       UR = require("../UR/UR.js")
 
@@ -16,6 +18,7 @@ function sendLemur(addr, args) {
 udpPort.on("ready", () => {
   console.log("\nLemur's UDP Port Ready !")
   jouets.lemurConfig(sendLemur)
+  UR.lemurConfig(sendLemur, lignesUR, colonnesUR)
 })
 
 udpPort.on("message", mess => {

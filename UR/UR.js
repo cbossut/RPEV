@@ -1,7 +1,8 @@
 const URIP = "192.168.0.102",
       URPort = 30002, // 1 more mess ? 3 125Hz instead 10
       net = require("net"),
-      sock = net.connect(URPort, URIP, () => console.log("UR's TCP Socket Ready !")).on('error', (err)=>console.log("URror :",err)).on('data', decodeURMessage)
+      sock = net.connect(URPort, URIP, () => console.log("UR's TCP Socket Ready !")).on('error', (err)=>console.log("URror :",err)).on('data', decodeURMessage),
+      fs = require('fs')
 
 function sendUR(cmd, sendLemur) {
   //console.log(cmd) //NOTE Debug
@@ -10,28 +11,52 @@ function sendUR(cmd, sendLemur) {
 }
 
 let getMode = 0,
-    sel = -1,
-    positions = [], // positions registered via Lemur
+    r = -1, // sel row
+    c = -1, // sel col
+    posFilePath = __dirname+"/positions.json",
+    positions = JSON.parse(fs.readFileSync(posFilePath)), // positions registered via Lemur
     curJointPos = [], // radians updated on UR data
     serialPos = [], // 0-1023 updated on serial data
     initPos = [], // to map from Serial from starting position when serial is started
-    period = 100
+    period = 100,
+    row = 4,
+    column = 4
+
+
+function lemurConfig(sendLemur, r, c) {
+  row = r
+  column = c
+  sendLemur("/UR/Positions", ["@row", row, "@multilabel", 1])
+  sendLemur("/UR/Positions", ["@column", column])
+  for (let i = 0 ; i < row ; i++) if (!positions[i]) positions[i] = []
+}
 
 //TODO save and load positions from and to a file
 function manageLemurMessage(mess, sendLemur) {
   if (mess.address.startsWith("/UR/Mode")) getMode = mess.args[0]
   
+  else if (mess.address.startsWith("/UR/Save"))
+    fs.writeFileSync(posFilePath, JSON.stringify(positions))
+  
   else if (mess.address.startsWith("/UR/Positions")) {
+    // Check just on pad was just pushed
     let on = []
     for (let i = 0 ; i < mess.args.length ; i++) {
       if (mess.args[i]) on.push(i)
     }
-    if (!on.length) sel = -1
-    else if (sel == -1 && on.length == 1) {
-      sel = on[0]
-      if (getMode) {
-        positions[sel] = curJointPos
-        sendLemur("/UR/Info", ["@content", "Registered pos "+sel+" to "+curJointPos])
+    if (!on.length) r = -1
+    else if (r == -1 && on.length == 1) {// on[0] is the only pad pushed
+      r = Math.floor(on[0]/row)
+      c = on[0] % column
+      if (c = column - 1) {
+        let cmd = "if True:"
+        for (let i = 0 ; i < column - 1 ; i++) {
+          if (positions[r][i]) cmd += "stopj(10)movej(["+positions[r][i]+"])" 
+        }
+        sendUR(cmd+"end", sendLemur)
+      } else if (getMode) {
+        positions[r][c] = curJointPos
+        sendLemur("/UR/Info", ["@content", "Registered pos "+r+','+c+" to "+curJointPos.map(Math.round())])
       } else {
         sendUR("if True:stopj(10)movej(["+positions[sel]+"])end", sendLemur)
       }
@@ -128,6 +153,7 @@ function mapSerialToUR() {
 module.exports = {
   sock:sock,
   startSerial:startSerial,
-  manageLemurMessage:manageLemurMessage
+  manageLemurMessage:manageLemurMessage,
+  lemurConfig:lemurConfig
 }
 
