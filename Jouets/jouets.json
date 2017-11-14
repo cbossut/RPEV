@@ -10,13 +10,6 @@
     ]
   },
   {
-    "name": "Test",
-    "ip": "192.168.0.10",
-    "Btn1":"trigger?pin=4",
-    "Btn2":"trigger?pin=5",
-    "PWMBorns":[600,1023]
-  },
-  {
     "name": "Wall-e",
     "ip": "192.168.0.11",
     "Btn1":"trigger?pin=0",
@@ -73,24 +66,27 @@
     "PWMInit":700
   },
   {
-    "name": "Cochon",
+    "name": "Trump",
     "ip": "192.168.0.15",
     "Btn1":"trigger?pin=5",
-    "PWMBorns":[300,1023],
-    "PWMInit":700
+    "PWMBorns":[300,1023]
   },
   {
     "name": "Chien",
     "ip": "192.168.0.16",
     "Btn1":"trigger?pin=5",
-    "PWMBorns":[300,1023],
-    "PWMInit":700
+    "PWMBorns":[300,1023]
   },
   {
     "name": "Canard",
     "ip": "192.168.0.17",
     "Btn1":"trigger?pin=5",
-    "PWMBorns":[300,1023],
-    "PWMInit":700
+    "PWMBorns":[300,1023]
+  },
+  {
+    "name": "Cochon",
+    "ip": "192.168.0.10",
+    "Btn1":"toggle?pin=5",
+    "PWMBorns":[300,1023]
   }
 ]
