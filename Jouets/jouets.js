@@ -35,14 +35,18 @@ function lemurConfig(sendLemur) {
       if (!jouet[btn]) {
         sendLemur("/Jouet"+i+"/"+btn, ["@outline", 0])
       } else if (jouet[btn].startsWith("trigger")) {
-        sendLemur("/Jouet"+i+"/"+btn, ["@behavior", 1, "@outline", 1])
+        sendLemur("/Jouet"+i+"/"+btn, ["@behavior", 1])
+        sendLemur("/Jouet"+i+"/"+btn, ["@outline", 1])
       } else {//if (jouet[btn].startsWith("toggle")) {
-        sendLemur("/Jouet"+i+"/"+btn, ["@behavior", 0, "@outline", 1])
+        sendLemur("/Jouet"+i+"/"+btn, ["@behavior", 0])
+        sendLemur("/Jouet"+i+"/"+btn, ["@outline", 1])
         sendLemur("/Jouet"+i+"/"+btn+"/x", 0)
       }
     }
-    sendLemur("/Jouet"+i+"/Btn5", jouet.PWMInit ? ["@behavior", 1, "@outline", 1] : ["@outline", 0])
+    sendLemur("/Jouet"+i+"/Btn5", ["@outline", jouet.PWMInit ? 1 : 0])
+    sendLemur("/Jouet"+i+"/Btn5", ["@behavior", 1])
     if (jouet.PWMInit) sendLemur("/Jouet"+i+"/PWM/x", Math.abs((jouet.PWMInit-jouet.PWMBorns[0])/(jouet.PWMBorns[1]-jouet.PWMBorns[0])))
+    else sendLemur("/Jouet"+i+"/PWM", ["@color", 0])
   }
 }
 
@@ -95,7 +99,6 @@ function manageLemurMessage(mess, sendLemur) {
                 res.on('data', data => {sendLemur("/"+addr[1]+"/Mess", ["@content", data])})
               })
             })
-            jouet.tmp({setEncoding:()=>{},on:()=>{}})
           }
         }
       }
