@@ -1,4 +1,4 @@
-const URIP = "192.168.0.102",
+const URIP = "192.168.0.41",
       URPort = 30002, // 1 more mess ? 3 125Hz instead 10
       net = require("net"),
       sock = net.connect(URPort, URIP, () => console.log("UR's TCP Socket Ready !")).on('error', (err)=>console.log("URror :",err)).on('data', decodeURMessage),
@@ -48,7 +48,7 @@ function manageLemurMessage(mess, sendLemur) {
     else if (r == -1 && on.length == 1) {// on[0] is the only pad pushed
       r = Math.floor(on[0]/row)
       c = on[0] % column
-      if (c = column - 1) {
+      if (c == column - 1) {
         let cmd = "if True:"
         for (let i = 0 ; i < column - 1 ; i++) {
           if (positions[r][i]) cmd += "stopj(10)movej(["+positions[r][i]+"])" 
@@ -56,9 +56,9 @@ function manageLemurMessage(mess, sendLemur) {
         sendUR(cmd+"end", sendLemur)
       } else if (getMode) {
         positions[r][c] = curJointPos
-        sendLemur("/UR/Info", ["@content", "Registered pos "+r+','+c+" to "+curJointPos.map(Math.round())])
+        sendLemur("/UR/Info", ["@content", "Registered pos "+r+','+c+" to "+curJointPos.map((v,i,a)=>v.toFixed(4))])
       } else {
-        sendUR("if True:stopj(10)movej(["+positions[sel]+"])end", sendLemur)
+        sendUR("if True:stopj(10)movej(["+positions[r][c]+"],v=2)end", sendLemur)
       }
     }
   }
