@@ -1,4 +1,5 @@
 const lemurIP = "192.168.0.31",
+      lemurGael = "192.168.0.32",
       lemurPort = 8000,
       osc = require("osc"),
       udpPort = new osc.UDPPort({
@@ -13,6 +14,7 @@ const lemurIP = "192.168.0.31",
 function sendLemur(addr, args) {
   //console.log("Send ", args, " to Lemur's ", addr) //NOTE Debug
   udpPort.send({address:addr,args:args}, lemurIP, lemurPort)
+  udpPort.send({address:addr,args:args}, lemurGael, lemurPort)
 }
 
 udpPort.on("ready", () => {
