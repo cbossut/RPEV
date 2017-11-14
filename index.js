@@ -1,15 +1,26 @@
 const xb = require('./XBOXPad/xbox.js')
+    , lemur = require('./Lemur/index.js')
     , mb = require('./Metabot/metabot.js')
     , fb = require('./FiveBot/fivebot.js')
+    , jouets = require('./Jouets/jouets.js')
+    , UR = require('./UR/UR.js')
+    , lemurListenPort = 8000
+    , RPIP = "192.168.0.40"
+    , RPPort = 12345
+    , UR3IP = "192.168.0.41"
+    , UR5IP = "192.168.0.42"
+    , URPort = 30002
+    , lignesUR = 5
+    , colonnesUR = 5
 
 mb.init()
 
-fb.init()
+fb.init(RPIP, RPPort)
+
+UR.init(UR3IP, UR5IP, URPort, lignesUR, colonnesUR)
 
 //TOBO Currently useless, by this design, xbox should call mb methods itself, Lemur selecting the way xbox maps, treating xbox as an instrment for Lemur
 xb.addInstrument({Metabot:mb, Fivebot:fb})
-
-xb.start()
 
 // Metabot map
 xb.chgMap({
@@ -27,13 +38,24 @@ xb.chgMap({
 })
 
 // Fivebot map
+/*
 let x=0, y=0, r=0
 xb.chgMap({
   select: (arg)=>arg && fb.close(),
   lx: (arg)=>{y = mapXBtoFB(arg); fb.sendXYR(x,y,r)},
   ly: (arg)=>{x = mapXBtoFB(arg); fb.sendXYR(x,y,r)},
   z: (arg)=>{r = mapXBtoFB(arg); fb.sendXYR(x,y,r)}
-})
+})*/
+
+xb.start()
+
+
+
+lemur.addInstrument({UR:UR, XBOX:xb, Jouets:jouets})
+
+lemur.start(lemurListenPort)
+
+
 
 function mapXBtoFB(v) {
   return v*10/255 - 5

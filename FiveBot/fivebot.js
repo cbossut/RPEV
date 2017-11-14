@@ -1,15 +1,13 @@
-const RPIP = "192.168.0.40"
-    , RPPort = 12345
-    , net = require('net')
+const net = require('net')
 
 let fb
 
-function openTCPSocket() {
+function openTCPSocket(RPIP, RPPort) {
   fb = net.connect(RPPort, RPIP, () => console.log("FiveBot (rasp) TCP Socket Ready !")).on('error', (err)=>console.log("Raspberry error :",err)).setEncoding('utf8').on('data', console.log)//DEBUG
 }
 
 function sendSpeed(x, y, r) { // -5 to 5
-  fb.write(formatSpeed(x) + formatSpeed(y) + formatSpeed(r), 'binary')
+  fb.write(formatSpeed(x*.8) + formatSpeed(y*.8) + formatSpeed(r*.8), 'binary')
   module.exports.sock = fb
 }
 

@@ -1,5 +1,4 @@
 const HID = require('node-hid')
-    , device = new HID.HID(1118, 654)
     , instrus = {}
 
 let state = {
@@ -20,12 +19,11 @@ let state = {
   ly: 0,
   z: 0
 }
-let curMap = {}
+let curMap = {},
+    device
 for (let k in state) {
   curMap[k] = (arg)=>{console.log("Nothing for",k, arg)}
 }
-
-device.on('error', console.log)
 
 function mapEntry(buf) {
   let chg = updateXBOX(buf)
@@ -109,6 +107,6 @@ function updateXBOX(buf) {
 
 module.exports = {
   addInstrument: i=>Object.assign(instrus, i),
-  start: ()=>device.on('data', mapEntry),
+  start: ()=>device = new HID.HID(1118, 654).on('data', mapEntry).on('error', console.log),
   chgMap: (m)=>Object.assign(curMap, m)
 }
