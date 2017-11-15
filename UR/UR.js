@@ -20,7 +20,9 @@ let getMode = {UR3:0,UR5:0}, //TODO crappy, could be in positions object ?
     curJointPos = {UR3:[],UR5:[]}, // radians updated on UR data
     serialPos = [], // 0-1023 updated on serial data
     initPos = [], // to map from Serial from starting position when serial is started
-    period = 100
+    period = 100,
+    a = 10,
+    v = 10
 
 function init(IP3, IP5, port) {
   sock3 = net.connect(port, IP3, () => console.log("UR3 connected")).on('error', (err)=>console.log("URror3 :",err)).on('data', (data)=>decodeURMessage(data, 3))
@@ -62,7 +64,7 @@ function manageLemurMessage(mess, sendLemur) {
         if (!positions[addr[1]].moves[n] || !positions[addr[1]].moves[n][m])
           sendLemur(info, ["@content", "No pos registered at "+n+','+m])
         else
-          sendUR("if True:stopj(10)movej(["+positions[addr[1]].moves[n][m]+"],v=2.5)end", sendLemur, nUR)
+          sendUR("if True:stopj(10)movej(["+positions[addr[1]].moves[n][m]+"],"+a+','+v+")end", sendLemur, nUR)
       }
     } else if ((addr[3] == 'd' || addr[3] == 'g' || addr[3] == 'p')) {
       let moves = positions[addr[1]].moves[n]
@@ -71,10 +73,10 @@ function manageLemurMessage(mess, sendLemur) {
         return
       }
       let cmd = (loopMode[addr[1]] ? "while" : "if") + " True:stopj(10)"
-      if (addr[3] == 'p') cmd += "movej(["+positions[addr[1]].Passage+"])"
+      if (addr[3] == 'p') cmd += "movej(["+positions[addr[1]].Passage+"],"+a+','+v+")"
       for (let i = 0 ; i < moves.length ; i++) {
         let j = addr[3]=='g' ? (moves.length - i - 1) : i
-        if (moves[j]) cmd += "movej(["+moves[j]+"])" // Need stop between move ?
+        if (moves[j]) cmd += "movej(["+moves[j]+"],"+a+','+v+")" // Need stop between move ?
       }
       sendUR(cmd+"end", sendLemur, nUR)
     }
@@ -91,7 +93,7 @@ function manageLemurMessage(mess, sendLemur) {
       if (!positions[addr[1]][addr[3]])
         sendLemur(info, ["@content", "No pos registered at "+addr[3]])
       else
-        sendUR("if True:stopj(10)movej(["+positions[addr[1]][addr[3]]+"],v=10)end", sendLemur, nUR)
+        sendUR("if True:stopj(10)movej(["+positions[addr[1]][addr[3]]+"],"+a+','+v+")end", sendLemur, nUR)
     }
   }
 }
