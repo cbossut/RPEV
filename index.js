@@ -7,8 +7,8 @@ const xb = require('./XBOXPad/xbox.js')
     , lemurListenPort = 8000
     , RPIP = "192.168.0.40"
     , RPPort = 12345
-    , UR3IP = "192.168.0.41"
-    , UR5IP = "192.168.0.42"
+    , UR3IP = "192.168.0.43"
+    , UR5IP = "192.168.0.45"
     , URPort = 30002
 
 mb.init()
