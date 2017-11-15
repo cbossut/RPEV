@@ -10,29 +10,6 @@
     ]
   },
   {
-    "name": "Wall-e",
-    "ip": "192.168.0.11",
-    "Btn1":"trigger?pin=0",
-    "PWMBorns":[800,0],
-    "PWMInit":300
-  },
-  {
-    "name": "Winnie",
-    "ip": "192.168.0.12",
-    "Btn1":"toggle?pin=0",
-    "Btn2":"trigger?pin=4",
-    "Btn3":"trigger?pin=5",
-    "PWMBorns":[150,1023],
-    "PWMInit":750
-  },
-  {
-    "name": "Bébé",
-    "ip": "192.168.0.13",
-    "Btn1":"trigger?pin=5",
-    "PWMBorns":[150,1023],
-    "PWMInit":500
-  },
-  {
     "name": "GI",
     "ip": "192.168.0.14",
     "Btn1":"toggle?pin=4",
@@ -49,14 +26,10 @@
     "PWMInit":50
   },
   {
-    "name": "Chicco",
-    "ip": "192.168.0.18",
-    "Btn1":"toggle?pin=4",
-    "Btn2":"trigger?pin=5",
-    "Btn3":"move",
-    "Btn4":"switch",
-    "PWMBorns":[200,1023],
-    "PWMInit":550
+    "name": "Cochon",
+    "ip": "192.168.0.10",
+    "Btn1":"toggle?pin=5",
+    "PWMBorns":[300,1023]
   },
   {
     "name": "Chat",
@@ -64,6 +37,29 @@
     "Btn1":"trigger?pin=5",
     "PWMBorns":[300,1023],
     "PWMInit":700
+  },
+  {
+    "name": "Winnie",
+    "ip": "192.168.0.12",
+    "Btn1":"toggle?pin=0",
+    "Btn2":"trigger?pin=4",
+    "Btn3":"trigger?pin=5",
+    "PWMBorns":[150,1023],
+    "PWMInit":750
+  },
+  {
+    "name": "Wall-e",
+    "ip": "192.168.0.11",
+    "Btn1":"trigger?pin=0",
+    "PWMBorns":[800,0],
+    "PWMInit":300
+  },
+  {
+    "name": "Bébé",
+    "ip": "192.168.0.13",
+    "Btn1":"trigger?pin=5",
+    "PWMBorns":[150,1023],
+    "PWMInit":500
   },
   {
     "name": "Trump",
@@ -82,11 +78,15 @@
     "ip": "192.168.0.17",
     "Btn1":"trigger?pin=5",
     "PWMBorns":[300,1023]
-  },
+  }/*,
   {
-    "name": "Cochon",
-    "ip": "192.168.0.10",
-    "Btn1":"toggle?pin=5",
-    "PWMBorns":[300,1023]
-  }
+    "name": "Chicco",
+    "ip": "192.168.0.18",
+    "Btn1":"toggle?pin=4",
+    "Btn2":"trigger?pin=5",
+    "Btn3":"move",
+    "Btn4":"switch",
+    "PWMBorns":[200,1023],
+    "PWMInit":550
+  },*/
 ]
