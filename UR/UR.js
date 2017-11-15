@@ -47,7 +47,7 @@ function manageLemurMessage(mess, sendLemur) {
   
   else if (addr[2] == "Stop" && mess.args[0]) sendUR("stopj(10)", sendLemur, nUR)
   
-  else if (addr[2].startsWith("Move")) {
+  else if (addr[2].startsWith("Move") && mess.args[0]) {
     let n = addr[2].slice(4)
     if (addr[3][0] == '_') {
       let m = addr[3].slice(1)
@@ -55,6 +55,8 @@ function manageLemurMessage(mess, sendLemur) {
         if (!positions[addr[1]].moves[n]) positions[addr[1]].moves[n] = []
         positions[addr[1]].moves[n][m] = curJointPos[addr[1]]
         sendLemur(info, ["@content", "Registered move"+n+','+m+" to "+curJointPos[addr[1]]])
+        sendLemur('/'+addr[1]+"/Mode/x", 0)
+        getMode[addr[1]] = 0
         fs.writeFileSync(posFilePath, JSON.stringify(positions))
       } else {
         if (!positions[addr[1]].moves[n] || !positions[addr[1]].moves[n][m])
@@ -62,31 +64,34 @@ function manageLemurMessage(mess, sendLemur) {
         else
           sendUR("if True:stopj(10)movej(["+positions[addr[1]].moves[n][m]+"],v=2.5)end", sendLemur, nUR)
       }
-    } else if ((addr[3] == 'd' || addr[3] == 'g') && mess.args[0]) {
+    } else if ((addr[3] == 'd' || addr[3] == 'g' || addr[3] == 'p')) {
       let moves = positions[addr[1]].moves[n]
       if (!moves) {
         sendLemur(info, ["@content", "No moves "+n])
         return
       }
       let cmd = (loopMode[addr[1]] ? "while" : "if") + " True:stopj(10)"
+      if (addr[3] == 'p') cmd += "movej(["+positions[addr[1]].Passage+"])"
       for (let i = 0 ; i < moves.length ; i++) {
-        let j = addr[3]=='d' ? i : (moves.length - i - 1)
+        let j = addr[3]=='g' ? (moves.length - i - 1) : i
         if (moves[j]) cmd += "movej(["+moves[j]+"])" // Need stop between move ?
       }
       sendUR(cmd+"end", sendLemur, nUR)
     }
   }
   
-  else if (addr[2] == "Other") {//TODO Crappy copy paste of above
+  else if (addr[2] == "Other" && mess.args[0]) {//TODO Crappy copy paste of above
     if (getMode[addr[1]]) {
       positions[addr[1]][addr[3]] = curJointPos[addr[1]]
       sendLemur(info, ["@content", "Registered "+addr[3]+" to "+curJointPos[addr[1]]])
+      sendLemur('/'+addr[1]+"/Mode/x", 0)
+      getMode[addr[1]] = 0
       fs.writeFileSync(posFilePath, JSON.stringify(positions))
     } else {
       if (!positions[addr[1]][addr[3]])
         sendLemur(info, ["@content", "No pos registered at "+addr[3]])
       else
-        sendUR("if True:stopj(10)movej(["+positions[addr[1]][addr[3]]+"],v=2.5)end", sendLemur, nUR)
+        sendUR("if True:stopj(10)movej(["+positions[addr[1]][addr[3]]+"],v=10)end", sendLemur, nUR)
     }
   }
 }
