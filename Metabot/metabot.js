@@ -12,7 +12,7 @@ function connectToFirstMB() {
       if (res[i].pnpId.startsWith('BTHENUM')) {
         let btaddr = res[i].pnpId.split('_')[1].split('&')[4]
         if (mbs[btaddr]) {
-          mb = new serial('COM10', {baudRate: 921600}, (err)=>{
+          mb = new serial(res[1].comName, {baudRate: 921600}, (err)=>{
             console.log("Connected to", mbs[btaddr], "Metabot with error", err)
             module.exports.d = mb
           })//.setEncoding('utf8').on('data', console.log)//DEBUG
