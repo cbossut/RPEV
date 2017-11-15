@@ -11,7 +11,7 @@ const xb = require('./XBOXPad/xbox.js')
     , UR5IP = "192.168.0.45"
     , URPort = 30002
 
-mb.init()
+//mb.init()
 
 fb.init(RPIP, RPPort)
 
@@ -20,6 +20,7 @@ UR.init(UR3IP, UR5IP, URPort)
 //TOBO Currently useless, by this design, xbox should call mb methods itself, Lemur selecting the way xbox maps, treating xbox as an instrment for Lemur
 xb.addInstrument({Metabot:mb, Fivebot:fb})
 
+/*
 // Metabot map
 xb.chgMap({
   start: (arg)=>arg && mb.start(),
@@ -34,16 +35,16 @@ xb.chgMap({
   ry: (arg)=>mb.send('extraX ' + mapXBtoMB(arg)),
   z: (arg)=>mb.send('turn ' + -mapXBtoMB(arg, 180))
 })
+*/
 
 // Fivebot map
-/*
 let x=0, y=0, r=0
 xb.chgMap({
   select: (arg)=>arg && fb.close(),
   lx: (arg)=>{y = mapXBtoFB(arg); fb.sendXYR(x,y,r)},
   ly: (arg)=>{x = mapXBtoFB(arg); fb.sendXYR(x,y,r)},
   z: (arg)=>{r = mapXBtoFB(arg); fb.sendXYR(x,y,r)}
-})*/
+})
 
 xb.start()
 
