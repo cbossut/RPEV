@@ -93,16 +93,21 @@ function manageLemurMessage(mess, sendLemur) {
 
 //NOTE See Client_Interface.xlsx, tab DataStreamFromURController
 function decodeURMessage(mess, UR) {
-  let pos = 0,
-      size = mess.readInt32BE(pos)
-  pos += 5
-  while(pos < size) {
-    let curSize = mess.readInt32BE(pos),
-        curType = mess[pos+4]
-    if (curType == 1) {
-      getPosFromJointData(mess.slice(pos, pos+curSize), UR)
+  try {
+    let pos = 0,
+        size = mess.readInt32BE(pos)
+    pos += 5
+    while(pos < size) {
+      let curSize = mess.readInt32BE(pos),
+          curType = mess[pos+4]
+      if (curType == 1) {
+        getPosFromJointData(mess.slice(pos, pos+curSize), UR)
+      }
+      pos += curSize
     }
-    pos += curSize
+  }
+  catch (err) {
+   console.log("Catched URrorDecode", err)
   }
 }
 
